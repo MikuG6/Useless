@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Авторизация</title>
+  </head>
+  <body>
+    <form action="" method="post">{% csrf_token %}
+        {{form.as_p}}
+        <button tupe="submit">Войти</button>
+    </form>
+  </body>
+</html>

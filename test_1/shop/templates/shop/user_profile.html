@@ -1,0 +1,8 @@
+{% extend "ToDoHome.html" %}
+{% content %}
+{% for task in title_tasks %}
+    <p>{{task}}</p>
+    <p>{{task.description}}</p>
+    <h1>-----------------------------------------------</h1>
+{% endfor %}
+{{owner}}
