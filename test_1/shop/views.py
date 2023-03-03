@@ -6,6 +6,7 @@ from .models import Task
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import logout, login
+from django.contrib.auth.models import User
 
 
 class HomeView(ListView):
@@ -15,7 +16,6 @@ class HomeView(ListView):
 class LoginUserView(LoginView):
     form_class = AuthenticationForm
     template_name = "registration/login.html"
-    success_url = ""
 
 
 class RegistrationFormView(FormView):
@@ -37,14 +37,28 @@ def logout_user(request):
     return redirect('/login')
 
 
+
 class UserProfileView(ListView):
     model = Task
-    template_name = "user_profile.html"
+    template_name = "shop/user_profile.html"
     context_object_name = "tasks"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title_tasks"] = Task.objects.all()
-        # context["owner"] = Task.owner.user_id()
+        context["users_tasks"] = Task.objects.filter(owner__id=self.request.user.id)
+
+        return context
+
+
+class AllTaskView(ListView):
+    model = Task
+    template_name = "shop/all_tasks.html"
+    context_object_name = "all_tasks"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title_tasks"] = Task.objects.all()
+        context["users_tasks"] = Task.objects.filter(owner__id=self.request.user.id)
 
         return context

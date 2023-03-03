@@ -1,8 +1,19 @@
-{% extend "ToDoHome.html" %}
-{% content %}
-{% for task in title_tasks %}
-    <p>{{task}}</p>
-    <p>{{task.description}}</p>
-    <h1>-----------------------------------------------</h1>
+{% extends 'shop/ToDoHome.html' %}
+<title>Профиль {{user}}</title>
+
+{% block profile %}
+<h1>Ваши задачи:</h1>
+
+{% for task in users_tasks %}
+
+<div class="card text-bg-dark" style="width: 40rem;">
+  <div class="card-header bg-transparent border-success">
+    <h5 class="card-title text-success text-center">{{task}}</h5>
+    <p class="card-body">{{task.description}}</p>
+    <a href="#" class="card-link">Удалить</a>
+    <a href="#" class="card-link">Выйти</a>
+  </div>
+</div>
+
 {% endfor %}
-{{owner}}
+{% endblock %}

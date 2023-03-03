@@ -7,7 +7,9 @@ class Task(models.Model):
     time_create = models.DateTimeField(auto_now_add=True)
     time_close = models.DateTimeField()
     is_done = models.BooleanField(default=False)
-    owner = models.ManyToManyField(User, db_table="owner")
+    owner = models.ManyToManyField(User, db_table="owner", 
+                                        related_name="owners"
+                                    )
 
     def __str__(self):
         return self.title

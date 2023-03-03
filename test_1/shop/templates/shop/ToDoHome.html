@@ -1,19 +1,30 @@
+<!doctype html>
 <html>
 <head>
     <meta charset="utf-8">
     <title>Главная страница</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
 </head>
 <body>
     {% if user.is_authenticated %}
-    
-        <h1><a href="#">Пользователь: {{user}}</a> | <a href="{% url 'logout' %}">Выйти</a> | <a href="#">Все задачи</a> | <a href="#">Добавить новую</a></h1>
+<div class="card">
+    <div class="card-body">        
+
+ 
+        <h1><a class="badge text-bg-primary" href="{% url 'user_profile' %}">Пользователь: {{user}}</a> | <a class="badge text-bg-danger" href="{% url 'logout' %}">Выйти</a> | <a class="badge text-bg-warning" href="{% url 'all_tasks' %}">Все задачи</a> | <a class="badge text-bg-success" href="#">Добавить новую</a></h1>
         
     {% else %}
 
         <h1><a href="{% url 'registration' %}">Зарегистрироваться</a> | <a href="{% url 'login' %}">Войти</a></h1>
-
+ 
     {% endif %}
+    </div>
+</div>
+{% block profile %}
 
+{% endblock %}
 
+{% block all_tasks %}
+{% endblock %}
 </body>
 </html>
