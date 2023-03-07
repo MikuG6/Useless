@@ -7,6 +7,7 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import logout, login
 from django.contrib.auth.models import User
+from django.views.decorators.http import require_http_methods
 
 
 class HomeView(ListView):
@@ -62,3 +63,14 @@ class AllTaskView(ListView):
         context["users_tasks"] = Task.objects.filter(owner__id=self.request.user.id)
 
         return context
+
+
+@require_http_methods(['POST'])
+def create_task(request):
+    title = request.POST['title']
+    description = request.POST['description']
+    owner2 = request.user.id
+    task = Task(title = title, description = description)
+    task.save()
+    task.owner.add(owner2)
+    return redirect('user_profile')

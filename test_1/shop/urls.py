@@ -1,4 +1,4 @@
-from .views import HomeView, RegistrationFormView, logout_user, LoginUserView, UserProfileView, AllTaskView
+from .views import HomeView, RegistrationFormView, logout_user, LoginUserView, UserProfileView, AllTaskView, create_task
 from django.urls import path, include
  
 
@@ -9,4 +9,5 @@ urlpatterns = [
     path("logout/", logout_user, name="logout"),
     path("user_profile/", UserProfileView.as_view(), name="user_profile"),
     path("all_tasks/", AllTaskView.as_view(), name="all_tasks"),
+    path("create_task/", create_task, name="create_task"),
 ]

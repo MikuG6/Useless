@@ -5,10 +5,10 @@ class Task(models.Model):
     title = models.CharField(max_length=50)
     description = models.TextField()
     time_create = models.DateTimeField(auto_now_add=True)
-    time_close = models.DateTimeField()
+    time_close = models.DateTimeField(auto_now=True)
     is_done = models.BooleanField(default=False)
     owner = models.ManyToManyField(User, db_table="owner", 
-                                        related_name="owners"
+                                        related_name="owners",
                                     )
 
     def __str__(self):
