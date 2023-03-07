@@ -13,15 +13,19 @@ from django.views.decorators.http import require_http_methods
 class HomeView(ListView):
     model = Task
     template_name = "shop/ToDoHome.html"
+    extra_context = {"title":"Главная страница"}
+
 
 class LoginUserView(LoginView):
     form_class = AuthenticationForm
     template_name = "registration/login.html"
+    extra_context = {"title":"Авторизация"}
 
 
 class RegistrationFormView(FormView):
     form_class = UserCreationForm
-    success_url = "/home"
+    success_url = "/"
+    extra_context = {"title":"Регистрация"}
 
     template_name = "registration/registration.html"
 
@@ -46,21 +50,24 @@ class UserProfileView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title_tasks"] = Task.objects.all()
         context["users_tasks"] = Task.objects.filter(owner__id=self.request.user.id)
+        context["title"] = "Профиль"
 
         return context
+
 
 
 class AllTaskView(ListView):
     model = Task
     template_name = "shop/all_tasks.html"
     context_object_name = "all_tasks"
+    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title_tasks"] = Task.objects.all()
         context["users_tasks"] = Task.objects.filter(owner__id=self.request.user.id)
+        context["title"] = "Все задачи"
 
         return context
 
@@ -74,3 +81,27 @@ def create_task(request):
     task.save()
     task.owner.add(owner2)
     return redirect('user_profile')
+
+
+def delete_task(request, pk):
+    task = Task.objects.get(id = pk)
+    task.delete()
+    return redirect('user_profile')
+
+def exit_task(request, pk):
+    task = Task.objects.get(id = pk)
+    task.owner.remove(request.user)
+    return redirect('user_profile')
+
+
+class TaskView(ListView):
+    model = Task
+    template_name = "shop/task_page.html"
+    context_object_name = "one_task"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["task"] = Task.objects.get(id = pk)
+        context["users_tasks"] = Task.objects.filter(owner__id=self.request.user.id)
+
+        return context

@@ -1,0 +1,18 @@
+{% extends 'shop/ToDoHome.html' %}
+
+{% block task_page %}
+
+{% for task in users_tasks %}
+
+
+{% if task.is_done %}
+
+<h3 class="text-center">{{task}}</h3>
+<h3 class="text-center">{{task.description}}</h3>
+
+    <a href="{% url 'delete_task' task.pk %}" class="card-link">Удалить</a>
+    <a href="{% url 'exit_task' task.pk %}" class="card-link">Выйти</a>
+  </div>
+</div>
+{{task.description}}
+{% endblock %}
