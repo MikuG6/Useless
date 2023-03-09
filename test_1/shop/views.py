@@ -1,6 +1,7 @@
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from django.views.generic.edit import FormView
 from .models import Task
 from django.contrib.auth.views import LoginView
@@ -25,9 +26,8 @@ class LoginUserView(LoginView):
 class RegistrationFormView(FormView):
     form_class = UserCreationForm
     success_url = "/"
-    extra_context = {"title":"Регистрация"}
-
     template_name = "registration/registration.html"
+    extra_context = {"title":"Регистрация"}
 
     def form_valid(self, form):
         form.save()
@@ -50,11 +50,14 @@ class UserProfileView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["users_tasks"] = Task.objects.filter(owner__id=self.request.user.id)
-        context["title"] = "Профиль"
+        context["users_tasks"] = self.queryset
+        context["title"] = "Профиль: {}".format(self.request.user)
 
         return context
 
+    def get_queryset(self):
+        self.queryset = Task.objects.filter(owner__id=self.request.user.id)
+        return self.queryset
 
 
 class AllTaskView(ListView):
@@ -66,7 +69,9 @@ class AllTaskView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title_tasks"] = Task.objects.all()
-        context["users_tasks"] = Task.objects.filter(owner__id=self.request.user.id)
+        context["users_tasks"] = Task.objects.filter(
+            owner__id=self.request.user.id
+        )
         context["title"] = "Все задачи"
 
         return context
@@ -76,32 +81,36 @@ class AllTaskView(ListView):
 def create_task(request):
     title = request.POST['title']
     description = request.POST['description']
-    owner2 = request.user.id
     task = Task(title = title, description = description)
     task.save()
-    task.owner.add(owner2)
-    return redirect('user_profile')
+    task.owner.add(request.user.id)
+    task.is_creater.add(request.user.id)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 def delete_task(request, pk):
-    task = Task.objects.get(id = pk)
-    task.delete()
-    return redirect('user_profile')
+    if (task := Task.objects.get(id = pk)) in Task.objects.filter(
+        is_creater__id=request.user.id
+    ):
+        task.delete()
+        return redirect("all_tasks")
+    else:
+        return HttpResponse("Вы не являетесь создателем задачи")
+
 
 def exit_task(request, pk):
     task = Task.objects.get(id = pk)
     task.owner.remove(request.user)
-    return redirect('user_profile')
+    return redirect("all_tasks")
 
 
-class TaskView(ListView):
+def join_a_task(request, pk):
+    task = Task.objects.get(id = pk)
+    task.owner.add(request.user)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class TaskView(DetailView):
     model = Task
     template_name = "shop/task_page.html"
     context_object_name = "one_task"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["task"] = Task.objects.get(id = pk)
-        context["users_tasks"] = Task.objects.filter(owner__id=self.request.user.id)
-
-        return context

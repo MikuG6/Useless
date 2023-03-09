@@ -8,16 +8,20 @@
 {% for task in all_tasks %}
 
 <div class="card text-bg-dark" style="width: 40rem;">
-    {% if task.is_done %}
-  <div class="card-header bg-transparent border-success">
-    <h5 class="card-title text-success text-center">{{task}}</h5>
-    {% else %}
-  <div class="card-header bg-transparent border-danger">
-    <h5 class="card-title text-danger text-center">{{task}}</h5>
-    {% endif %}
+  {% if task.is_done %}
+    <div class="card-header bg-transparent border-success">
+    <h5 class="text-center"><a href="{% url 'page_task' task.pk %}" class="card-title text-success text-center">{{task}}</a></h5>
+  {% else %}
+    <div class="card-header bg-transparent border-danger">
+    <h5 class="text-center"><a href="{% url 'page_task' task.pk %}" class="card-title text-danger text-center">{{task}}</a></h5>
+  {% endif %}
     <p class="card-body text-bg-secondary">{{task.description}}</p>
-    <a href="#" class="card-link">Удалить</a>
-    <a href="#" class="card-link">Выйти</a>
+  {% if task in users_tasks %}
+    <a href="{% url 'delete_task' task.pk %}" class="card-link">Удалить</a>
+    <a href="{% url 'exit_task' task.pk %}" class="card-link">Выйти</a>
+  {% else %}
+    <a href="{% url 'join_a_task' task.pk %}" class="card-link">Добавить к себе</a>
+  {% endif %}
   </div>
 </div>
 
